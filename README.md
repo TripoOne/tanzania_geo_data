@@ -76,7 +76,7 @@ List<Street> districtStreets = geoService.getStreetsByDistrict('Kigamboni Distri
 ```
 
 ## Example Application
-Check out the [example](https://github.com/TripoOne/tanzania_geo_data/tree/main/example) directory for a complete Flutter application demonstrating how to build a cascaded location picker.
+Check out the [example](https://github.com/your-username/tanzania_geo_data/tree/main/example) directory for a complete Flutter application demonstrating how to build a cascaded location picker.
 
 ## Data Coverage
 - **31 Regions**
