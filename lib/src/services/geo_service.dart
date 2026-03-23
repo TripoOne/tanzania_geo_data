@@ -76,4 +76,29 @@ class GeoService {
       streets: streets,
     );
   }
+
+  /// Returns a region by its post code
+  Region? getRegionByPostCode(String postCode) {
+    try {
+      return tanzaniaRegions.firstWhere(
+        (r) => r.postCode == postCode,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Returns a list of districts by their post code
+  List<District> getDistrictsByPostCode(String postCode) {
+    return tanzaniaDistricts
+        .where((d) => d.postCode == postCode)
+        .toList();
+  }
+
+  /// Returns a list of wards by their post code
+  List<Ward> getWardsByPostCode(String postCode) {
+    return tanzaniaWards
+        .where((w) => w.postCode == postCode)
+        .toList();
+  }
 }

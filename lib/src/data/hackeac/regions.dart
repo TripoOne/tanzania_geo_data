@@ -1,6 +1,6 @@
-import '../models/region.dart';
+import 'package:tanzania_geo_data/src/models/region.dart';
 
-const List<Region> tanzaniaRegions = [
+const List<Region> hackeacRegions = [
   Region(name: 'Arusha', postCode: '23'),
   Region(name: 'Dar Es Salaam', postCode: '11'),
   Region(name: 'Dodoma', postCode: '41'),
@@ -18,8 +18,6 @@ const List<Region> tanzaniaRegions = [
   Region(name: 'Mtwara', postCode: '63'),
   Region(name: 'Mwanza', postCode: '33'),
   Region(name: 'Njombe', postCode: '59'),
-  Region(name: 'Pemba Kaskazini', postCode: null),
-  Region(name: 'Pemba Kusini', postCode: null),
   Region(name: 'Pwani', postCode: '61'),
   Region(name: 'Rukwa', postCode: '55'),
   Region(name: 'Ruvuma', postCode: '57'),
@@ -29,7 +27,4 @@ const List<Region> tanzaniaRegions = [
   Region(name: 'Songwe', postCode: '54'),
   Region(name: 'Tabora', postCode: '45'),
   Region(name: 'Tanga', postCode: '21'),
-  Region(name: 'Unguja Kaskazini', postCode: null),
-  Region(name: 'Unguja Mjini Magharibi', postCode: null),
-  Region(name: 'Unguja Kusini', postCode: null),
 ];

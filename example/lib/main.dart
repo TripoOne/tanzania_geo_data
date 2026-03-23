@@ -78,70 +78,147 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tanzania Location Picker'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+  void _searchByPostCode(String code) {
+    if (code.isEmpty) return;
+
+    final district = _geoService.getDistrictsByPostCode(code);
+    final ward = _geoService.getWardsByPostCode(code);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Postcode Results: $code'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Region Dropdown
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Select Region'),
-              value: selectedRegion,
-              items: regions.map((r) => DropdownMenuItem(value: r.name, child: Text(r.name))).toList(),
-              onChanged: _onRegionChanged,
-            ),
-            const SizedBox(height: 16),
-
-            // District Dropdown
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Select District'),
-              value: selectedDistrict,
-              items: districts.map((d) => DropdownMenuItem(value: d.name, child: Text(d.name))).toList(),
-              onChanged: _onDistrictChanged,
-              disabledHint: const Text('Select a region first'),
-            ),
-            const SizedBox(height: 16),
-
-            // Ward Dropdown
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Select Ward'),
-              value: selectedWard,
-              items: wards.map((w) => DropdownMenuItem(value: w.name, child: Text(w.name))).toList(),
-              onChanged: _onWardChanged,
-              disabledHint: const Text('Select a district first'),
-            ),
-            const SizedBox(height: 16),
-
-            // Street Dropdown
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Select Street'),
-              value: selectedStreet,
-              items: streets.map((s) => DropdownMenuItem(value: s.name, child: Text(s.name))).toList(),
-              onChanged: (val) => setState(() => selectedStreet = val),
-              disabledHint: const Text('Select a ward first'),
-            ),
-            
-            const Spacer(),
-            if (selectedStreet != null)
-              Card(
-                color: Colors.green.shade50,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Selection: $selectedStreet, $selectedWard, $selectedDistrict, $selectedRegion',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+            if (district.isNotEmpty) ...[
+              const Text('Districts:', style: TextStyle(fontWeight: FontWeight.bold)),
+              ...district.map((d) => Text('• ${d.name} (${d.regionName})')),
+              const SizedBox(height: 8),
+            ],
+            if (ward.isNotEmpty) ...[
+              const Text('Wards:', style: TextStyle(fontWeight: FontWeight.bold)),
+              ...ward.map((w) => Text('• ${w.name} (${w.districtName})')),
+            ],
+            if (district.isEmpty && ward.isEmpty) const Text('No locations found for this postcode.'),
           ],
         ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Tanzania Geo Data v1.0.0'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.map), text: 'Cascaded Selection'),
+              Tab(icon: Icon(Icons.pin_drop), text: 'Postcode Search'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildCascadedPicker(),
+            _buildPostCodeSearch(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCascadedPicker() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Region', border: OutlineInputBorder()),
+            value: selectedRegion,
+            items: regions.map((r) => DropdownMenuItem(value: r.name, child: Text(r.name))).toList(),
+            onChanged: _onRegionChanged,
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select District', border: OutlineInputBorder()),
+            value: selectedDistrict,
+            items: districts.map((d) => DropdownMenuItem(value: d.name, child: Text(d.name))).toList(),
+            onChanged: _onDistrictChanged,
+            disabledHint: const Text('Select a region first'),
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Ward', border: OutlineInputBorder()),
+            value: selectedWard,
+            items: wards.map((w) => DropdownMenuItem(value: w.name, child: Text(w.name))).toList(),
+            onChanged: _onWardChanged,
+            disabledHint: const Text('Select a district first'),
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Street', border: OutlineInputBorder()),
+            value: selectedStreet,
+            items: streets.map((s) => DropdownMenuItem(value: s.name, child: Text(s.name))).toList(),
+            onChanged: (val) => setState(() => selectedStreet = val),
+            disabledHint: const Text('Select a ward first'),
+          ),
+          const Spacer(),
+          if (selectedStreet != null)
+            Card(
+              color: Colors.green.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Selected: $selectedStreet, $selectedWard, $selectedDistrict, $selectedRegion',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPostCodeSearch() {
+    final controller = TextEditingController();
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          const Text(
+            'Enter a Tanzanian Postcode to find its District or Ward.',
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Postcode',
+              hintText: 'e.g., 141, 47101',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.search),
+            ),
+            keyboardType: TextInputType.number,
+            onSubmitted: _searchByPostCode,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => _searchByPostCode(controller.text),
+            child: const Text('Search Locations'),
+          ),
+          const Spacer(),
+          const Text('Try "141" for Kinondoni or "23" for Arusha.'),
+        ],
       ),
     );
   }

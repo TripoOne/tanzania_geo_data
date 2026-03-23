@@ -1,6 +1,6 @@
 name: tanzania_geo_data
 description: A comprehensive Flutter package for retrieving and searching Tanzanian geographic data, including Regions, Districts, Wards, and Streets.
-version: 0.0.1
+version: 1.0.0
 homepage: https://github.com/TripoOne/tanzania_geo_data
 repository: https://github.com/TripoOne/tanzania_geo_data
 issue_tracker: https://github.com/TripoOne/tanzania_geo_data/issues
